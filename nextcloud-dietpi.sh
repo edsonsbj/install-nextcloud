@@ -206,28 +206,6 @@ EOF
 
 docker-compose up -d
 
-# Install Nginx Proxy Manager
-cd /docker/
-mkdir nginx && cd nginx
-touch docker-compose.yml
-cat <<EOF >>/docker/nginx/docker-compose.yml
-version: '3.8'
-services:
-  app:
-    image: 'jc21/nginx-proxy-manager:latest'
-    restart: unless-stopped
-    ports:
-      - '8880:80'	# CHANGE THE PORT 8880 TO AN HTTP PORT OF YOUR CHOICE
-      - '81:81'
-      - '8443:443'	# CHANGE THE PORT 8443 TO AN HTTPS PORT OF YOUR CHOICE
-    volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
-
-EOF
-
-docker-compose up -d
-
 # Nextcloud Adjustments
 cp /var/www/nextcloud/config/config.php /var/www/nextcloud/config/config.php.bk
 sed -i '/);/d' /var/www/nextcloud/config/config.php
@@ -333,6 +311,29 @@ sudo mkswap /swapfile
 sudo swapon /swapfile
 sudo swapon --show
 free -h
+
+# Install Nginx Proxy Manager
+cd /docker/
+mkdir nginx && cd nginx
+touch docker-compose.yml
+cat <<EOF >>/docker/nginx/docker-compose.yml
+version: '3.8'
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '8880:80'	# CHANGE THE PORT 8880 TO AN HTTP PORT OF YOUR CHOICE
+      - '81:81'
+      - '8443:443'	# CHANGE THE PORT 8443 TO AN HTTPS PORT OF YOUR CHOICE
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+
+EOF
+
+docker-compose up -d
+
 
 unset NCUSER
 unset NCPASS

@@ -310,9 +310,7 @@ sudo mount -a
 sed -i "s/'datadirectory' => '\/var\/www\/nextcloud\/data',.*/'datadirectory' => '\/media\/myCloudDrive\/nextcloud\/data',/" /var/www/nextcloud/config/config.php
 
 # Replace trusted_domains in the config.php file
-
-# Insert 'trusted_domains'
-sed -i "/'trusted_domains' =>/c\  'trusted_domains' =>\n  array (\n    0 => 'localhost',\n    1 => '192.168.0.70',\n    2 => 'thepandacloud.duckdns.org',\n  )," /var/www/nextcloud/config/config.php
+sed -i "/'trusted_domains' =>/s/0 => 'localhost',/0 => 'localhost',\n    1 => '192.168.0.70',\n    2 => 'thepandacloud.duckdns.org',/" /var/www/nextcloud/config/config.php
 
 sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
 

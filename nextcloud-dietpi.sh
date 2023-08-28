@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Check if the user is in the Linux root directory
-#if [ "$PWD" != "/" ]; then
-#    echo "This script must be executed in the root directory of the system."
-#    exit 1
-#fi
+if [ "$PWD" != "/" ]; then
+    echo "This script must be executed in the root directory of the system."
+    exit 1
+fi
 echo "Changing to the root directory..."
 cd /
 echo "pwd is $(pwd)"
@@ -16,6 +16,9 @@ if ! wget --spider https://download.nextcloud.com/server/releases/latest.zip; th
     echo "The site https://download.nextcloud.com is not online. Check your Internet connection."
     exit 1
 fi
+
+# Get the IP address of the Nextcloud device from the user
+read -p "Please enter the IP address of the device where Nextcloud will be installed: " NEXTCLOUD_IP
 
 # Request username
 read -p "Enter desired Nextcloud Administrator username (Recommended to use \"admin\"): " NCUSER
@@ -118,7 +121,7 @@ chmod -R 755 /var/www/nextcloud
 # Create VirtualHost for Nextcloud
 cat <<EOF >>/etc/apache2/sites-available/nextcloud.conf
 <VirtualHost *:80>
-	ServerName 192.168.0.70
+	ServerName $NEXTCLOUD_IP
 	#ServerAlias thepandacloud.duckdns.org
 	#ServerAdmin webmaster@example.com
 	DocumentRoot /var/www/nextcloud
@@ -137,7 +140,7 @@ cat <<EOF >>/etc/apache2/sites-available/nextcloud.conf
 EOF
 
 cat <<EOF >> /etc/apache2/apache2.conf
-ServerName 192.168.0.70
+ServerName $NEXTCLOUD_IP
 EOF
 
 # Enable VirtualHost and restart Apache
@@ -310,7 +313,7 @@ sudo mount -a
 sed -i "s/'datadirectory' => '\/var\/www\/nextcloud\/data',.*/'datadirectory' => '\/media\/myCloudDrive\/nextcloud\/data',/" /var/www/nextcloud/config/config.php
 
 # Replace trusted_domains in the config.php file
-sed -i "/'trusted_domains' =>/s/0 => 'localhost',/0 => 'localhost',\n    1 => '192.168.0.70',\n    2 => 'thepandacloud.duckdns.org',/" /var/www/nextcloud/config/config.php
+sed -i "/'trusted_domains' =>/s/0 => 'localhost',/0 => 'localhost',\n    1 => '$NEXTCLOUD_IP',\n    2 => 'thepandacloud.duckdns.org',/" /var/www/nextcloud/config/config.php
 
 sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
 

@@ -87,6 +87,16 @@ then
         exit 1
 fi
 
+# If Using Swap
+
+sudo swapoff -a
+sudo fallocate -l 8G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+sudo swapon --show
+free -h
+
 # Install Apache2, MariaDB, and PHP 8.2
 
 apt install unzip -y
@@ -105,19 +115,11 @@ sed -i 's/upload_max_filesize = .*/upload_max_filesize = 10240M/' /etc/php/8.2/f
 sed -i 's/post_max_size = .*/post_max_size = 10240M/' /etc/php/8.2/fpm/php.ini
 a2dismod php8.2 && sleep 2 && a2enmod proxy_fcgi setenvif && sleep 2 && a2enconf php8.2-fpm && sleep 2 && systemctl restart php8.2-fpm && sleep 2 && systemctl restart apache2
 
-# Configure MariaDB
-#mysql_secure_installation
-
 # Create the database for Nextcloud
-#mysql -e "CREATE DATABASE $NC_DB;"
-#mysql -e "CREATE USER '$NC_USER'@'localhost' IDENTIFIED BY '$NC_PASSWORD';"
-#mysql -e "GRANT ALL PRIVILEGES ON $NC_DB.* TO '$NC_USER'@'localhost';"
-#mysql -e "FLUSH PRIVILEGES;"ID
 mysql -e "CREATE DATABASE $NC_DB;"
 mysql -e "CREATE USER '$NC_USER'@'localhost' IDENTIFIED BY '$NC_PASSWORD';"
 mysql -e "GRANT ALL PRIVILEGES ON $NC_DB.* TO '$NC_USER'@'localhost';"
 mysql -e "FLUSH PRIVILEGES;"
-
 
 # Download and install Nextcloud
 wget https://download.nextcloud.com/server/releases/latest.zip
@@ -152,7 +154,7 @@ ServerName $NEXTCLOUD_IP
 EOF
 
 # Enable VirtualHost and restart Apache
-a2ensite nextcloud.conf && sleep 2 && systemctl reload apache2 && sleep 2 && systemctl status apache2 
+sudo a2dissite 000-default && sleep 2 && a2ensite nextcloud.conf && sleep 2 && systemctl reload apache2 && sleep 2 && systemctl status apache2
 
 # Run the Nextcloud installation script
 sudo -u www-data php /var/www/nextcloud/occ maintenance:install --database "mysql" --database-name "$NC_DB" --database-user "$NC_USER" --database-pass "$NC_PASSWORD" --admin-user $USER --admin-pass $PASS
@@ -196,6 +198,8 @@ services:
       - ./letsencrypt:/etc/letsencrypt
 
 EOF
+
+docker-compose up -d
 
 # Install Onlyoffice without mobile device limitation
 cd /
@@ -323,26 +327,13 @@ sed -i "/'trusted_domains' =>/s/0 => 'localhost',/0 => 'localhost',\n    1 => '$
 
 sudo -u www-data php /var/www/nextcloud/occ maintenance:mode --off
 
-# If Using Swap
-
-sudo swapoff -a
-sudo fallocate -l 8G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
-sudo swapon --show
-free -h
-
-docker-compose up -d
-
-
 unset NCUSER
 unset NCPASS
 unset NCPASS2
 unset DBPASS
 unset DBPASS2
 
-sudo a2dissite 000-default && sleep 2 && sudo systemctl restart apache2
+
 
 echo -e "\n\n\033[1;33m[\033[0m\033[1;32m OK \033[0;33m\033[1;33m]\033[0m \033[0mINSTALLATION COMPLETED!"
 echo -e "\033[1;32m───────────────────────────────────────────────────────────────────────────────────────────────────────\033[0m"

@@ -99,6 +99,7 @@ apt install redis-server php-redis -y
 
 # Configure PHP-FPM
 sed -i 's/memory_limit = .*/memory_limit = 512M/' /etc/php/8.2/apache2/php.ini
+sed -i 's/memory_limit = .*/memory_limit = 512M/' /etc/php/8.2/fpm/php.ini
 sed -i 's/;date.timezone.*/date.timezone = America\/\Sao_Paulo/' /etc/php/8.2/fpm/php.ini
 sed -i 's/upload_max_filesize = .*/upload_max_filesize = 10240M/' /etc/php/8.2/fpm/php.ini
 sed -i 's/post_max_size = .*/post_max_size = 10240M/' /etc/php/8.2/fpm/php.ini

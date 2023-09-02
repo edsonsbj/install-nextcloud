@@ -22,36 +22,6 @@ touch $LOG_FILE
 exec > >(tee -a $LOG_FILE)
 exec 2>&1
 
-# Solicitar ao usuário a escolha entre Debian e Ubuntu
-echo "Bem-vindo ao instalador PHP para Debian ou Ubuntu!"
-while true; do
-    read -p "Digite 'Debian' ou 'Ubuntu' para escolher a distribuição desejada: " distro
-    case $distro in
-        Debian)
-            # Comandos para DEBIAN
-            sudo apt install apt-transport-https lsb-release ca-certificates wget -y
-            sudo wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg 
-            sudo sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
-            sudo apt update
-            sudo apt install unzip imagemagick php8.2 php8.2-{fpm,cli,curl,gd,mbstring,xml,zip,bz2,intl,bcmath,gmp,imagick,mysql} -y
-            break
-            ;;
-        Ubuntu)
-            # Comandos para Ubuntu
-            sudo apt install software-properties-common -y
-            sudo add-apt-repository ppa:ondrej/php -y
-            sudo apt update
-            sudo apt install unzip imagemagick php8.2 php8.2-{fpm,cli,curl,gd,mbstring,xml,zip,bz2,intl,bcmath,gmp,imagick,mysql} -y
-            break
-            ;;
-        *)
-            echo "Escolha inválida. Por favor, digite 'Debian' ou 'Ubuntu'."
-            ;;
-    esac
-done
-
-echo "Instalação concluída com sucesso!"
-
 # Atualize o sistema.
 apt update
 apt -y full-upgrade

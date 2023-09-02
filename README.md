@@ -1,6 +1,8 @@
 # nextcloud
 Where some scripts used in Nextcloud can be found
 
-After Dietpi First Boot:
+## Getting Started
 
-cd / && wget https://raw.githubusercontent.com/lstavares84/nextcloud/master/nextcloud-dietpi.sh -O nextcloud-dietpi.sh && chmod +x nextcloud-dietpi.sh && ./nextcloud-dietpi.sh
+- Make sure `git` is already installed on your system.
+- Clone this repository using the command `git clone https://github.com/edsonsbj/install-nextcloud.git`.
+- cd "/Debian & Ubuntu" && chmod +x nextcloud-install.sh && ./nextcloud-install.sh

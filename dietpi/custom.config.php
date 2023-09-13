@@ -1,5 +1,5 @@
 <?php
-\$CONFIG = array (
+$CONFIG = array (
   'default_phone_region' => 'BR',
   'skeletondirectory' => '',
   'enabledPreviewProviders' =>
@@ -24,6 +24,6 @@
   'force_language' => 'pt',
   'default_locale' => 'pt_BR',
   'force_locale' => 'pt_BR',
-  'overwritehost' => '${first_domain}:8443',
+#  'overwritehost' => '${first_domain}:8443',
   'overwriteprotocol' => 'https',
 );

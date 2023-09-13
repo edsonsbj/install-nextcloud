@@ -85,24 +85,13 @@ cd /docker/
 sudo mkdir nginx && cd nginx
 touch docker-compose.yml
 echo -e "Creating docker-compose.yml..."
-sudo cat <<EOF >>/docker/nginx/docker-compose.yml
-version: '3.8'
-services:
-  app:
-    image: 'jc21/nginx-proxy-manager:latest'
-    restart: unless-stopped
-    ports:
-      - '8880:80' # CHANGE THE PORT 8880 TO AN HTTP PORT OF YOUR CHOICE
-      - '81:81'
-      - '8443:443' # CHANGE THE PORT 8443 TO AN HTTPS PORT OF YOUR CHOICE
-    volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
+cd /
+mkdir docker/ 
+cd docker/
+mkdir nginx
+cd nginx
+curl -sSfL https://raw.githubusercontent.com/edsonsbj/install-nextcloud/main/dietpi/NGINX/docker-compose.yml -o docker-compose.yml
 
-EOF
-
-echo -e "${LIGHT_GREEN}Opening folder of docker-compose.yml${RESET_COLOR}"
-cd /docker/nginx
 echo -e "${LIGHT_GREEN}Installing NGINX PROXY MANAGER using Docker Compose${RESET_COLOR}"
 docker compose up -d
 echo -e "${LIGHT_GREEN}NGINX PROXY MANAGER INSTALLED VIA DOCKER$${RESET_COLOR}"
@@ -115,41 +104,8 @@ echo -e "[ ${BOLD_YELLOW}!${RESET_COLOR} ] All softwares needed were installed.{
 ###################### STEP 2 ######################
 
 # Create the nextcloud.conf file
-CONF_FILE="/etc/apache2/sites-available/nextcloud.conf"
-cat <<EOF > $CONF_FILE
-<VirtualHost *:80>
-    ServerName $NEXTCLOUD_IP
-    #ServerAlias domain.duckdns.org
-    #ServerAdmin webmaster@example.com
-    DocumentRoot /var/www/nextcloud
-
-    <Directory /var/www/nextcloud>
-        Options FollowSymLinks MultiViews
-        AllowOverride All
-    </Directory>
-
-    ErrorLog \${APACHE_LOG_DIR}/example.com-error.log
-    CustomLog \${APACHE_LOG_DIR}/example.com-access.log combined
-
-    SetEnv HOME /var/www/nextcloud
-    SetEnv HTTP_HOME /var/www/nextcloud
-</VirtualHost>
-EOF
-
-echo -e "\033[1;32mCreated $CONF_FILE with the specified content.\033[0m"
-
-#cat $CONF_FILE
-#while true; do
-#   echo -e "[ ${BOLD_YELLOW}!${RESET_COLOR} ] Is the LOCAL IP address in $CONF_FILE correct for your Nextcloud? (Y/N): "
-#   read user_input
-#    if [ "$user_input" == "Y" ] || [ "$user_input" == "y" ]; then
-#        break
-#    elif [ "$user_input" == "N" ] || [ "$user_input" == "n" ]; then
-#        nano $CONF_FILE
-#    else
-#        echo -e "Invalid input. Please enter 'Y' or 'N'."
-#    fi
-#done
+cd /etc/apache2/sites-available/nextcloud.conf
+curl -sSfL https://raw.githubusercontent.com/edsonsbj/install-nextcloud/main/dietpi/nextcloud.conf -o nextcloud.conf
 
 ################## END OF STEP 2 ###################
 
@@ -237,39 +193,8 @@ done
 # Now, both domains match and are stored in the 'first_domain' variable
 echo -e "[ ${BOLD_YELLOW}!${RESET_COLOR} ] You entered the domain: ${BOLD_GREEN}$first_domain${RESET_COLOR} "
 
-cat <<EOF > "$custom_config_file"
-<?php
-\$CONFIG = array (
-  'default_phone_region' => 'BR',
-  'skeletondirectory' => '',
-  'enabledPreviewProviders' =>
-  array (
-    0 => 'OC\\Preview\\PNG',
-    1 => 'OC\\Preview\\JPEG',
-    2 => 'OC\\Preview\\GIF',
-    3 => 'OC\\Preview\\BMP',
-    4 => 'OC\\Preview\\XBitmap',
-    5 => 'OC\\Preview\\Movie',
-    6 => 'OC\\Preview\\PDF',
-    7 => 'OC\\Preview\\MP3',
-    8 => 'OC\\Preview\\TXT',
-    9 => 'OC\\Preview\\MarkDown',
-    10 => 'OC\\Preview\\Image',
-    11 => 'OC\\Preview\\HEIC',
-    12 => 'OC\\Preview\\TIFF',
-  ),
-  'trashbin_retention_obligation' => 'auto,30',
-  'versions_retention_obligation' => 'auto,30',
-  'default_language' => 'pt',
-  'force_language' => 'pt',
-  'default_locale' => 'pt_BR',
-  'force_locale' => 'pt_BR',
-  'overwritehost' => '${first_domain}:8443',
-  'overwriteprotocol' => 'https',
-);
-
-EOF
-
+cd /var/www/nextcloud/config/
+curl -sSfL https://raw.githubusercontent.com/edsonsbj/install-nextcloud/main/dietpi/custom.config.php -o custom.config.php
 sed -i "s/'overwrite.cli.url' => 'http:\/\/localhost\/nextcloud',/'overwrite.cli.url' => 'http:\/\/localhost\/',/" "$config_file"
 sed -i "s/'htaccess.RewriteBase' => '\/nextcloud',/'htaccess.RewriteBase' => '\/',/" "$config_file"
 

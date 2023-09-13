@@ -78,18 +78,12 @@ chmod -R 755 /var/www/nextcloud
 
 
 # Install Nginx Proxy Manager
-echo -e "${LIGHT_GREEN}Preparing for NGINX PROXY MANAGER installation${RESET_COLOR}"
-cd /
-sudo mkdir docker/ && cd docker/
-cd /docker/
-sudo mkdir nginx && cd nginx
-touch docker-compose.yml
 echo -e "Creating docker-compose.yml..."
 cd /
 mkdir docker/ 
 cd docker/
-mkdir nginx
-cd nginx
+mkdir nginx/
+cd nginx/
 curl -sSfL https://raw.githubusercontent.com/edsonsbj/install-nextcloud/main/dietpi/NGINX/docker-compose.yml -o docker-compose.yml
 
 echo -e "${LIGHT_GREEN}Installing NGINX PROXY MANAGER using Docker Compose${RESET_COLOR}"
